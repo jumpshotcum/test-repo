@@ -92,7 +92,8 @@ h1 { font-family: var(--font-display); font-weight: 650; font-size: clamp(36px, 
 }
 .segmented button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
 .sort { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-3); font-size: 14px; }
-.sort select { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; min-height: 36px; padding: 0 8px; }
+.sort { min-width: 0; max-width: 100%; }
+.sort select { max-width: 100%; min-width: 0; font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; min-height: 36px; padding: 0 8px; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {

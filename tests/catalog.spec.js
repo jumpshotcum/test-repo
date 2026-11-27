@@ -68,6 +68,15 @@ test("slash focuses search and theme toggle switches theme", async ({ page }) =>
 });
 
 test("no horizontal scroll", async ({ page }) => {
-  const [sw, cw] = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
-  expect(sw).toBeLessThanOrEqual(cw);
+  // Allow 1px for subpixel rounding on high-DPR devices; report real offenders by name.
+  const { sw, cw, offenders } = await page.evaluate(() => {
+    const cw = document.documentElement.clientWidth;
+    const offenders = [...document.querySelectorAll("body *")]
+      .filter((e) => e.getBoundingClientRect().right > cw + 1)
+      .slice(0, 5)
+      .map((e) => `${e.tagName.toLowerCase()}${e.id ? "#" + e.id : ""}.${e.className} → ${e.getBoundingClientRect().right.toFixed(1)}px`);
+    return { sw: document.documentElement.scrollWidth, cw, offenders };
+  });
+  expect(offenders, "elements wider than the viewport").toEqual([]);
+  expect(sw).toBeLessThanOrEqual(cw + 1);
 });
