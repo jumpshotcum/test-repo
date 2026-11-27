@@ -1,4 +1,4 @@
-name: Test & deploy
+name: Test
 
 on:
   push:
@@ -21,25 +21,3 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test --trace off
-
-  deploy:
-    if: github.event_name != 'pull_request'
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    concurrency:
-      group: pages
-      cancel-in-progress: true
-    steps:
-      - uses: actions/checkout@v5
-      - name: Collect site files
-        run: mkdir _site && cp -r index.html styles.css app.js data _site/
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-      - id: deployment
-        uses: actions/deploy-pages@v4

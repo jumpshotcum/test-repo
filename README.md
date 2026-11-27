@@ -54,7 +54,9 @@ npm test
 
 ## Deploy
 
-`.github/workflows/pages.yml` menjalankan tes di setiap push dan pull request, lalu men-deploy situs ke GitHub Pages saat ada push ke `main`. Aktifkan sekali di **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+Situs di-deploy oleh GitHub Pages langsung dari branch `main` (**Settings → Pages → Deploy from a branch → main / root**), ke https://jumpshotcum.github.io/test-repo/. File `.nojekyll` membuat GitHub menyajikan file apa adanya tanpa Jekyll.
+
+`.github/workflows/pages.yml` menjalankan tes Playwright di setiap push dan pull request.
 
 ## Struktur
 
