@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kasku — Buku Kasbon</title>
+  <meta name="description" content="Buku kasbon digital gratis untuk warung. Catat utang pelanggan, tagih lewat WhatsApp, data tetap di HP Anda.">
+  <meta name="theme-color" content="#1d6b54" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#151410" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="app.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="common.skip">Langsung ke isi</a>
+
+  <header class="top">
+    <div class="top__inner">
+      <div class="brand">
+        <img src="icon.svg" alt="" width="32" height="32">
+        <div>
+          <p class="brand__name" data-i18n="appName">Kasku</p>
+          <p class="brand__shop" id="shopName"></p>
+        </div>
+      </div>
+      <div class="backup-pill" id="backupPill" hidden></div>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- Kasbon -->
+    <section class="view" id="view-kasbon" aria-labelledby="h-kasbon">
+      <h1 class="sr-only" id="h-kasbon" data-i18n="nav.kasbon">Kasbon</h1>
+      <div class="hero">
+        <p class="hero__label" data-i18n="kasbon.totalLabel">Total piutang</p>
+        <p class="hero__value" id="totalReceivable">Rp 0</p>
+        <p class="hero__sub" id="receivableSub"></p>
+      </div>
+      <div class="toolbar">
+        <label class="search">
+          <span class="sr-only" data-i18n="kasbon.search">Cari pelanggan</span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m21 21-4.3-4.3M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14Z"/></svg>
+          <input id="customerSearch" type="search" autocomplete="off" data-i18n-placeholder="kasbon.search">
+        </label>
+        <button type="button" class="btn btn--primary" id="addCustomerBtn">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+          <span data-i18n="kasbon.addCustomer">Tambah pelanggan</span>
+        </button>
+      </div>
+      <ul class="customers" id="customerList" aria-live="polite"></ul>
+      <div class="empty" id="customerEmpty" hidden>
+        <svg aria-hidden="true" viewBox="0 0 64 64" width="64" height="64"><rect x="12" y="8" width="40" height="48" rx="6" fill="none" stroke="currentColor" stroke-width="3"/><path d="M22 22h20M22 32h20M22 42h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+        <h2 data-i18n="kasbon.emptyTitle">Belum ada pelanggan</h2>
+        <p data-i18n="kasbon.emptyBody"></p>
+      </div>
+      <p class="muted center" id="customerNoMatch" hidden></p>
+    </section>
+
+    <!-- Kas -->
+    <section class="view" id="view-kas" aria-labelledby="h-kas" hidden>
+      <h1 class="sr-only" id="h-kas" data-i18n="nav.kas">Kas</h1>
+      <div class="stats" id="todayStats"></div>
+      <div class="split">
+        <button type="button" class="btn btn--in" id="addInBtn"><span aria-hidden="true">＋</span> <span data-i18n="kas.addIn">Uang masuk</span></button>
+        <button type="button" class="btn btn--out" id="addOutBtn"><span aria-hidden="true">−</span> <span data-i18n="kas.addOut">Uang keluar</span></button>
+      </div>
+      <section class="card" aria-labelledby="h-week">
+        <h2 class="card__title" id="h-week" data-i18n="kas.week">7 hari terakhir</h2>
+        <div id="weekChart" class="chart"></div>
+      </section>
+      <section class="card" aria-labelledby="h-recent">
+        <h2 class="card__title" id="h-recent" data-i18n="kas.recent">Catatan terbaru</h2>
+        <ul class="ledger" id="cashList"></ul>
+        <div class="empty empty--small" id="cashEmpty" hidden>
+          <h3 data-i18n="kas.emptyTitle">Belum ada catatan kas</h3>
+          <p data-i18n="kas.emptyBody"></p>
+        </div>
+      </section>
+    </section>
+
+    <!-- Data -->
+    <section class="view" id="view-data" aria-labelledby="h-data" hidden>
+      <h1 class="sr-only" id="h-data" data-i18n="nav.data">Data</h1>
+      <section class="card" aria-labelledby="h-backup">
+        <h2 class="card__title" id="h-backup" data-i18n="data.backupTitle">Cadangan data</h2>
+        <p class="notice" id="backupStatus" role="status" aria-live="polite"></p>
+        <p class="muted" data-i18n="data.backupWhy"></p>
+        <div class="stack">
+          <button type="button" class="btn btn--primary" id="shareBackupBtn" data-i18n="data.share">Kirim cadangan ke WhatsApp</button>
+          <button type="button" class="btn" id="downloadBackupBtn" data-i18n="data.download">Unduh file cadangan</button>
+          <label class="btn btn--file">
+            <span data-i18n="data.restore">Pulihkan dari file</span>
+            <input type="file" id="restoreInput" accept="application/json,.json">
+          </label>
+        </div>
+        <p class="muted small" id="persistStatus"></p>
+      </section>
+
+      <section class="card" aria-labelledby="h-settings">
+        <h2 class="card__title" id="h-settings" data-i18n="data.settingsTitle">Pengaturan</h2>
+        <form id="settingsForm" class="form" novalidate>
+          <label class="field">
+            <span data-i18n="data.shopName">Nama toko</span>
+            <input name="shop" id="shopInput" autocomplete="organization" maxlength="60" data-i18n-placeholder="data.shopPlaceholder">
+          </label>
+          <label class="field">
+            <span data-i18n="data.language">Bahasa</span>
+            <select name="lang" id="langSelect">
+              <option value="id">Bahasa Indonesia</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <label class="field">
+            <span data-i18n="data.template">Pesan tagihan WhatsApp</span>
+            <textarea name="template" id="templateInput" rows="4" maxlength="500"></textarea>
+            <small class="hint" data-i18n="data.templateHint"></small>
+          </label>
+          <button type="submit" class="btn btn--primary" data-i18n="data.save">Simpan pengaturan</button>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="h-privacy">
+        <h2 class="card__title" id="h-privacy" data-i18n="data.privacy">Privasi</h2>
+        <p class="muted" data-i18n="data.privacyBody"></p>
+      </section>
+    </section>
+  </main>
+
+  <nav class="tabs" aria-label="Menu utama" data-i18n-label="nav.menu">
+    <button type="button" class="tab" data-view="kasbon" aria-current="page">
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M5 4h11l3 3v13H5zM9 10h6M9 14h6M9 18h3"/></svg>
+      <span data-i18n="nav.kasbon">Kasbon</span>
+    </button>
+    <button type="button" class="tab" data-view="kas">
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+      <span data-i18n="nav.kas">Kas</span>
+    </button>
+    <button type="button" class="tab" data-view="data">
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="22" height="22"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3h16v-3"/></svg>
+      <span data-i18n="nav.data">Data</span>
+      <span class="dot" id="backupDot" hidden></span>
+    </button>
+  </nav>
+
+  <dialog id="sheet" class="sheet" aria-labelledby="sheetTitle">
+    <form method="dialog" class="sheet__inner" id="sheetForm" novalidate>
+      <header class="sheet__head">
+        <h2 id="sheetTitle"></h2>
+        <button type="button" class="icon-btn" id="sheetClose" data-i18n-label="common.close" aria-label="Tutup">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </header>
+      <div id="sheetBody"></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <noscript><p class="center">Kasku membutuhkan JavaScript.</p></noscript>
+</body>
+</html>
