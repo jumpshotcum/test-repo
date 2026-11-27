@@ -1,0 +1,15 @@
+{
+ "Engineering & DevOps": ["chaos-engineering","docker-development","helm-chart-builder","kubernetes-operator","feature-flags-architect","code-tour","code-to-prd","karpathy-coder","commit-craft","readme-polish","coding-agent-rollout","google-workspace-cli","unreal-engine-skills-for-claude-code","security-guidance","mobile-release","i18n-localization","hivemind","startup-hook-skill"],
+ "Testing & QA": ["pw","design-qa","a11y-audit","agent-regression-evals","data-quality-auditor"],
+ "Design & Frontend": ["design","apple-hig-expert","landing","markdown-html-skills"],
+ "AI & Agents": ["agent-harness","agent-launcher-skills","agent-memory","agent-run-forensics","agenthub","autoresearch-agent","behuman","book-to-skill","caveman","collab-proof","fable-goal","human-gate","llm-cost-optimizer","loop-library","memory-engineering","power-user-coach","prompt-governance","si","skill-retro","skillopt-sleep","write-a-skill","skill-creator","cinematic-shot-prompting","deep-learning-book","computer-use","built-in-browser","chrome-browser","import-memory"],
+ "Compliance & Security": ["access-lifecycle","cmmc-readiness","compliance-os","compliance-team-eu-ai-act","compliance-team-iso42001","cra-readiness","dora-readiness","nis2-readiness","medical-device-software"],
+ "Executive & Strategy": ["c-level-agents","chief-ai-officer-advisor","chief-customer-officer-advisor","chief-data-officer-advisor","general-counsel-advisor","executive-mentor","andreessen","roast","arquiteto-de-empresa","grill-me","grill-with-docs","reflect-skill"],
+ "Business & Finance": ["business-investment-advisor","business-operations-skills","commercial-skills","cloud-finops","month-end-close","monetize"],
+ "Product & Project": ["agile-product-owner","pm-skills","meetings","handoff-engineering","handoff-productivity"],
+ "Data & Analytics": ["data","statistical-analyst","research-ops-skills"],
+ "Research": ["research-orchestrator","pulse","meta-research","dossier","grants","litreview","patent","notebooklm","deepread","research-summarizer","llm-wiki","deep-research","metodologi-penelitian"],
+ "Content & Marketing": ["linkedin","aeo","video-content-strategist","video-studio","demo-video","youtube-full","menulis-novel","sunting-tulisan-indonesia"],
+ "Productivity": ["productivity","capture-skill","deep-work","weekly-review","email-pair","morning"],
+ "Documents & Office": ["docx","pdf","pptx","xlsx","docs"]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "katalog-skill",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Direktori interaktif plugin, skill, agent, dan command Claude Code yang terinstall.",
+  "scripts": {
+    "catalog": "python3 scripts/extract_catalog.py ~/.claude/plugins/synced/*/ --skills ~/.claude/skills/synced/*/ ~/.claude/skills",
+    "serve": "python3 -m http.server 8000",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.48.2"
+  }
+}
