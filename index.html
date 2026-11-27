@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kasku — Buku kasbon digital gratis untuk warung</title>
+  <meta name="description" content="Kasku adalah buku kasbon digital gratis untuk warung dan toko kecil. Catat utang pelanggan dalam 2 ketukan, tagih sopan lewat WhatsApp, dan data tetap di HP Anda tanpa server atau akun.">
+  <meta name="theme-color" content="#1d6b54">
+  <link rel="icon" href="app/icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://jumpshotcum.github.io/test-repo/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kasku — Buku kasbon digital gratis untuk warung">
+  <meta property="og:description" content="Catat kasbon dalam 2 ketukan, tagih sopan lewat WhatsApp, data tetap di HP Anda.">
+  <meta property="og:url" content="https://jumpshotcum.github.io/test-repo/">
+  <meta property="og:image" content="https://jumpshotcum.github.io/test-repo/app/icon-512.png">
+  <meta property="og:locale" content="id_ID">
+  <meta name="twitter:card" content="summary">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- AEO: structured data so answer engines can quote Kasku accurately (skill: aeo) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "Kasku",
+        "alternateName": "Kasku — Buku Kasbon Digital",
+        "description": "Buku kasbon digital gratis dan open-source untuk warung di Indonesia. Mencatat utang pelanggan, mengirim pengingat lewat WhatsApp, dan menyimpan data hanya di perangkat pengguna.",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Android, iOS, Windows, macOS (web/PWA)",
+        "inLanguage": ["id", "en"],
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "IDR" },
+        "url": "https://jumpshotcum.github.io/test-repo/app/",
+        "license": "https://opensource.org/licenses/MIT"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          { "@type": "Question", "name": "Apakah Kasku gratis?", "acceptedAnswer": { "@type": "Answer", "text": "Ya. Kasku gratis selamanya, tanpa iklan dan tanpa langganan. Kode sumbernya terbuka (MIT)." } },
+          { "@type": "Question", "name": "Di mana data kasbon saya disimpan?", "acceptedAnswer": { "@type": "Answer", "text": "Hanya di HP Anda. Kasku tidak punya server, akun, atau pelacak. Data baru keluar dari HP jika Anda sendiri mengirim file cadangan, misalnya ke WhatsApp." } },
+          { "@type": "Question", "name": "Bagaimana jika HP saya rusak atau cache terhapus?", "acceptedAnswer": { "@type": "Answer", "text": "Buat cadangan satu ketukan ke WhatsApp atau Google Drive. Kasku mengingatkan bila cadangan terakhir lebih dari 7 hari, dan file cadangan bisa dipulihkan di HP baru." } },
+          { "@type": "Question", "name": "Apakah Kasku butuh internet?", "acceptedAnswer": { "@type": "Answer", "text": "Hanya saat pertama dibuka. Setelah itu Kasku bisa dipasang di layar utama dan berjalan tanpa internet." } },
+          { "@type": "Question", "name": "Bagaimana cara menagih kasbon lewat WhatsApp?", "acceptedAnswer": { "@type": "Answer", "text": "Buka pelanggan, ketuk Tagih via WA. WhatsApp terbuka dengan pesan sopan berisi nama dan sisa utang yang bisa Anda ubah sebelum dikirim." } }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --navy: #1d6b54;          /* brand primary (override of skill default) */
+      --navy-mid: #16523f;      /* darker primary for closing section */
+      --teal: #cf5f1e;          /* accent */
+      --teal-glow: rgba(207, 95, 30, 0.16);
+      --paper: #f5f1e8;
+      --surface: #fffdf8;
+      --ink: #1c1a15;
+      --text-muted: #4f4a40;
+      --card-bg: #fffdf8;
+      --card-border: #ddd5c4;
+      --on-brand: #ffffff;
+      --on-brand-muted: rgba(255, 255, 255, 0.86);
+      --focus: #1f5fd1;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 400 18px/1.6 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+    h1, h2, h3, p { margin: 0; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 8px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; }
+    .skip { position: absolute; left: 16px; top: -60px; background: var(--ink); color: #fff; padding: 10px 14px; border-radius: 10px; z-index: 10; }
+    .skip:focus { top: 12px; }
+
+    .eyebrow { display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px; background: var(--navy); color: var(--on-brand);
+      font-size: 18px; font-weight: 600; text-decoration: none; padding: 16px 28px; border-radius: 14px; min-height: 52px;
+      box-shadow: 0 10px 30px -12px rgba(29, 107, 84, 0.6); transition: transform .2s ease, filter .2s ease;
+    }
+    .btn-primary:hover { transform: translateY(-2px); filter: brightness(1.08); }
+    .btn-secondary { display: inline-flex; align-items: center; min-height: 52px; padding: 0 20px; font-weight: 600; color: var(--navy); text-decoration: underline; text-underline-offset: 4px; }
+
+    /* Nav */
+    .nav { position: absolute; top: 0; left: 0; right: 0; z-index: 3; }
+    .nav .container { display: flex; align-items: center; justify-content: space-between; min-height: 72px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; text-decoration: none; }
+    .nav a.small { font-size: 15px; font-weight: 600; text-decoration: none; padding: 10px 14px; border-radius: 10px; }
+    .nav a.small:hover { background: rgba(29, 107, 84, .08); }
+
+    /* Section 1: Hero */
+    .hero { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; position: relative; overflow: hidden; padding: 110px 0 80px; }
+    .hero-shapes-back, .hero-shapes-mid { position: absolute; inset: 0; pointer-events: none; }
+    .shape { position: absolute; border-radius: 50%; }
+    .hero-shapes-back .shape-a { width: 520px; height: 520px; right: -140px; top: -120px; background: rgba(29, 107, 84, .14); filter: blur(60px); animation: floatA 12s ease-in-out infinite; }
+    .hero-shapes-back .shape-b { width: 420px; height: 420px; left: -160px; bottom: -160px; background: rgba(207, 95, 30, .12); filter: blur(60px); animation: floatB 15s ease-in-out infinite; }
+    .hero-shapes-mid .shape-c { width: 22px; height: 22px; left: 52%; top: 16%; background: var(--teal); opacity: .5; animation: floatC 9s ease-in-out infinite; }
+    .hero-shapes-mid .shape-d { width: 14px; height: 14px; right: 44%; bottom: 18%; background: var(--navy); opacity: .45; animation: floatA 11s ease-in-out infinite; }
+    .hero-grid { position: relative; z-index: 1; display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
+    .hero h1 { font-size: clamp(42px, 6.4vw, 76px); font-weight: 800; line-height: 1.04; letter-spacing: -0.03em; margin: 14px 0 20px; }
+    .hero h1 em { font-style: normal; color: var(--navy); }
+    .hero .subtitle { font-size: 19px; color: var(--text-muted); max-width: 34ch; }
+    .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; align-items: center; }
+    .trust { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 26px; font-size: 15px; color: var(--text-muted); list-style: none; padding: 0; }
+    .trust li::before { content: "✓ "; color: var(--navy); font-weight: 800; }
+    .scroll-down { position: absolute; left: 50%; bottom: 24px; margin-left: -14px; color: var(--text-muted); animation: bounce 2s ease-in-out infinite; }
+
+    /* Phone mock (pure CSS, no image download) */
+    .phone { width: min(340px, 100%); margin: 0 auto; background: #1c1a15; border-radius: 40px; padding: 12px; box-shadow: 0 40px 80px -30px rgba(28, 26, 21, .45); transform: rotate(2deg); }
+    .screen { background: var(--paper); border-radius: 30px; overflow: hidden; font-size: 14px; }
+    .screen .bar { background: var(--surface); padding: 16px 18px 12px; font-weight: 800; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--card-border); }
+    .screen .total { margin: 14px; background: var(--navy); color: #fff; border-radius: 18px; padding: 14px 16px; }
+    .screen .total small { opacity: .85; display: block; }
+    .screen .total strong { font-size: 28px; letter-spacing: -.02em; }
+    .screen ul { list-style: none; margin: 0 14px 16px; padding: 0; display: grid; gap: 8px; }
+    .screen li { background: var(--surface); border: 1px solid var(--card-border); border-radius: 14px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; }
+    .screen .av { width: 30px; height: 30px; border-radius: 50%; background: #dcefe6; color: var(--navy); display: grid; place-items: center; font-weight: 800; font-size: 12px; flex: none; }
+    .screen .nm { flex: 1; font-weight: 600; }
+    .screen .amt { font-weight: 800; color: #a3401b; }
+    .screen .wa { margin: 0 14px 16px; background: #1e7d45; color: #fff; text-align: center; border-radius: 12px; padding: 10px; font-weight: 700; }
+
+    /* Section 2: Features */
+    .features { padding: 120px 0; }
+    .section-head { max-width: 720px; margin-bottom: 48px; }
+    .section-head h2, .closing-cta h2 { font-size: clamp(34px, 4.6vw, 58px); font-weight: 800; letter-spacing: -0.025em; line-height: 1.08; margin-top: 10px; }
+    .section-head p { color: var(--text-muted); margin-top: 14px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; perspective: 1000px; }
+    .feature-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 28px; transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
+    .feature-card:hover { transform: translateY(-6px); border-color: var(--navy); box-shadow: 0 20px 40px -24px rgba(28, 26, 21, .35); }
+    .feature-card svg { width: 28px; height: 28px; stroke: var(--teal); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .feature-card h3 { font-size: 22px; font-weight: 700; margin: 16px 0 8px; }
+    .feature-card p { font-size: 16px; color: var(--text-muted); }
+
+    /* How it works + FAQ */
+    .steps { padding: 0 0 120px; }
+    .steps ol { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: s; }
+    .steps li { counter-increment: s; background: var(--surface); border-radius: 20px; padding: 24px; border: 1px dashed var(--card-border); }
+    .steps li::before { content: counter(s); display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 800; margin-bottom: 12px; }
+    .steps strong { display: block; font-size: 19px; margin-bottom: 4px; }
+    .steps span { color: var(--text-muted); font-size: 16px; }
+    .faq { padding: 0 0 120px; }
+    .faq details { background: var(--surface); border: 1px solid var(--card-border); border-radius: 16px; padding: 0 22px; margin-bottom: 10px; }
+    .faq summary { cursor: pointer; font-weight: 700; padding: 18px 0; min-height: 52px; list-style-position: outside; }
+    .faq details p { color: var(--text-muted); padding: 0 0 18px; }
+    .facts { display: grid; gap: 14px; padding-left: 22px; margin: 0 0 18px; max-width: 70ch; }
+    .facts a { color: var(--navy); font-weight: 700; }
+    .sources { font-size: 14px; color: var(--text-muted); max-width: 70ch; overflow-wrap: anywhere; }
+    ol.sources { padding-left: 22px; margin: 4px 0 0; }
+
+    /* Section 3: Closing CTA */
+    .closing-cta { background: var(--navy-mid); color: var(--on-brand); padding: 120px 24px; text-align: center; position: relative; overflow: hidden; }
+    .closing-cta p { color: var(--on-brand-muted); max-width: 46ch; margin: 18px auto 0; }
+    .cta-glow { position: relative; display: inline-block; margin-top: 36px; }
+    .cta-glow::before { content: ""; position: absolute; inset: -80px -120px; background: radial-gradient(circle, var(--teal-glow) 0%, transparent 70%); pointer-events: none; }
+    .closing-cta .btn-primary { background: var(--surface); color: var(--navy); position: relative; }
+    footer { padding: 32px 0 48px; color: var(--text-muted); font-size: 15px; }
+    footer .container { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+
+    @keyframes floatA { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(20px, -30px) rotate(8deg); } }
+    @keyframes floatB { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 50% { transform: translate(-24px, 18px) rotate(-6deg); } }
+    @keyframes floatC { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(10px, 16px); } }
+    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+    @media (prefers-reduced-motion: reduce) { .shape, .scroll-down { animation: none !important; } }
+
+    @media (max-width: 900px) {
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .steps ol { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 580px) {
+      body { font-size: 17px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 42px; }
+      .features { padding: 80px 0; }
+      .steps, .faq { padding-bottom: 80px; }
+      .closing-cta { padding: 88px 16px; }
+      .container { padding: 0 16px; }
+      .scroll-down, .hero-shapes-mid { display: none; }
+      .phone { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#fitur">Langsung ke isi</a>
+
+  <header class="nav">
+    <div class="container">
+      <a class="logo" href="./"><img src="app/icon.svg" width="32" height="32" alt="">Kasku</a>
+      <a class="small" href="app/">Buka aplikasi</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Section 1: Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-shapes-back" aria-hidden="true"><span class="shape shape-a"></span><span class="shape shape-b"></span></div>
+      <div class="hero-shapes-mid" aria-hidden="true"><span class="shape shape-c"></span><span class="shape shape-d"></span></div>
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Gratis · Tanpa akun · Bisa offline</span>
+          <h1 id="hero-title">Kasbon tercatat, <em>ditagih sopan</em>, tidak pernah hilang.</h1>
+          <p class="subtitle">Buku kasbon digital untuk warung. Catat utang pelanggan dalam 2 ketukan, ingatkan lewat WhatsApp, dan data tetap di HP Anda.</p>
+          <div class="actions">
+            <a class="btn-primary" href="app/">Buka Kasku <span aria-hidden="true">→</span></a>
+            <a class="btn-secondary" href="#cara">Lihat caranya</a>
+          </div>
+          <ul class="trust">
+            <li>Tanpa iklan</li><li>Tanpa daftar</li><li>Data tidak dikirim ke server</li>
+          </ul>
+        </div>
+        <div class="phone" role="img" aria-label="Contoh layar Kasku: total piutang Rp 76.000 dengan daftar pelanggan dan tombol Tagih via WA">
+          <div class="screen" aria-hidden="true">
+            <div class="bar"><img src="app/icon.svg" width="22" height="22" alt="">Warung Bu Sri</div>
+            <div class="total"><small>Total piutang</small><strong>Rp 76.000</strong></div>
+            <ul>
+              <li><span class="av">PB</span><span class="nm">Pak Budi</span><span class="amt">Rp 60.000</span></li>
+              <li><span class="av">MR</span><span class="nm">Mbak Rina</span><span class="amt">Rp 10.000</span></li>
+              <li><span class="av">BA</span><span class="nm">Bu Ani</span><span class="amt">Rp 6.000</span></li>
+            </ul>
+            <div class="wa">Tagih via WA</div>
+          </div>
+        </div>
+      </div>
+      <svg class="scroll-down" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </section>
+
+    <!-- Section 2: Features -->
+    <section class="features" id="fitur" aria-labelledby="fitur-title">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Kenapa Kasku</span>
+          <h2 id="fitur-title">Dibuat untuk dua hal yang bikin pusing pemilik warung.</h2>
+          <p>Uang yang masih di tangan pelanggan, dan takut catatannya hilang. Sisanya kami buat sesederhana buku tulis.</p>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <h3>Catat dalam 2 ketukan</h3>
+            <p>Ketuk ＋ di samping nama pelanggan, lalu ketuk nominalnya. Selesai, antrean tetap jalan. Salah ketuk? Tinggal Batalkan.</p>
+          </article>
+          <article class="feature-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.5A9 9 0 1 1 21 12Z"/></svg>
+            <h3>Tagih tanpa canggung</h3>
+            <p>Satu ketukan membuka WhatsApp dengan pesan sopan berisi sisa utang. Kata-katanya bisa Anda ubah sesuai gaya sendiri.</p>
+          </article>
+          <article class="feature-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/></svg>
+            <h3>Data tetap di HP Anda</h3>
+            <p>Tidak ada server, akun, atau pelacak. Catatan pelanggan Anda tidak dikirim ke siapa pun.</p>
+          </article>
+          <article class="feature-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3h16v-3"/></svg>
+            <h3>Cadangan sekali ketuk</h3>
+            <p>Kirim file cadangan ke WhatsApp Anda sendiri. Kasku mengingatkan kalau sudah lebih dari 7 hari.</p>
+          </article>
+          <article class="feature-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+            <h3>Kas harian</h3>
+            <p>Catat uang masuk dan keluar, lihat selisih hari ini dan grafik 7 hari. Cukup untuk tahu bisa belanja stok Senin.</p>
+          </article>
+          <article class="feature-card">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 9 16.5 19 6.5"/></svg>
+            <h3>Ringan &amp; bisa offline</h3>
+            <p>Pasang di layar utama seperti aplikasi. Setelah dibuka sekali, tetap jalan walau sinyal hilang.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="steps" id="cara" aria-labelledby="cara-title">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Cara pakai</span>
+          <h2 id="cara-title">Mulai dalam satu menit.</h2>
+        </div>
+        <ol>
+          <li><strong>Buka Kasku</strong><span>Tidak perlu daftar atau unduh dari Play Store. Bisa dipasang di layar utama.</span></li>
+          <li><strong>Tambah pelanggan</strong><span>Cukup nama. Nomor WhatsApp boleh menyusul.</span></li>
+          <li><strong>Catat &amp; tagih</strong><span>Ketuk ＋ untuk kasbon, ketuk Tagih via WA saat waktunya menagih.</span></li>
+        </ol>
+      </div>
+    </section>
+
+
+    <section class="faq" id="kenapa" aria-labelledby="kenapa-title">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Kenapa Kasku ada</span>
+          <h2 id="kenapa-title">Pembukuan warung tidak butuh aplikasi mahal.</h2>
+        </div>
+        <ul class="facts">
+          <li>Menurut survei Bank Indonesia yang dikutip Metro TV News, sekitar <strong>58% UMKM belum melakukan pencatatan keuangan secara formal</strong> <a href="#src-1" aria-describedby="src-label">[1]</a>.</li>
+          <li>Aplikasi pembukuan UMKM berdana besar pun kesulitan: BukuKas (Lummo) menutup aplikasinya pada Mei 2023 <a href="#src-2" aria-describedby="src-label">[2]</a>. Karena itu Kasku sengaja <strong>gratis, tanpa server, dan open-source</strong>. Tidak ada biaya operasional yang bisa membuatnya tutup, dan siapa pun bisa melanjutkan kodenya.</li>
+          <li>Kasku fokus pada dua hal yang paling sering dikeluhkan pemilik warung: <strong>menagih kasbon</strong> dan <strong>takut catatan hilang</strong>.</li>
+        </ul>
+        <p class="sources" id="src-label">Sumber:</p>
+        <ol class="sources">
+          <li id="src-1"><a href="https://www.metrotvnews.com/read/b1oC8nL5-kesehatan-finansial-umkm-masih-mengkhawatirkan">Metro TV News — Kesehatan finansial UMKM masih mengkhawatirkan</a></li>
+          <li id="src-2"><a href="https://media.dealstreetasia.com/stories/indonesia-lummo-liquidation-360554">DealStreetAsia — Indonesia's Lummo enters liquidation</a></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow">Pertanyaan</span>
+          <h2 id="faq-title">Yang sering ditanyakan</h2>
+        </div>
+        <details><summary>Apakah Kasku gratis?</summary><p>Ya. Kasku gratis selamanya, tanpa iklan dan tanpa langganan. Kode sumbernya terbuka (MIT).</p></details>
+        <details><summary>Di mana data kasbon saya disimpan?</summary><p>Hanya di HP Anda. Kasku tidak punya server, akun, atau pelacak. Data baru keluar dari HP jika Anda sendiri mengirim file cadangan, misalnya ke WhatsApp.</p></details>
+        <details><summary>Bagaimana jika HP saya rusak atau cache terhapus?</summary><p>Buat cadangan satu ketukan ke WhatsApp atau Google Drive. Kasku mengingatkan bila cadangan terakhir lebih dari 7 hari, dan file cadangan bisa dipulihkan di HP baru.</p></details>
+        <details><summary>Apakah Kasku butuh internet?</summary><p>Hanya saat pertama dibuka. Setelah itu Kasku bisa dipasang di layar utama dan berjalan tanpa internet.</p></details>
+        <details><summary>Bagaimana cara menagih kasbon lewat WhatsApp?</summary><p>Buka pelanggan, ketuk <b>Tagih via WA</b>. WhatsApp terbuka dengan pesan sopan berisi nama dan sisa utang yang bisa Anda ubah sebelum dikirim.</p></details>
+      </div>
+    </section>
+
+    <!-- Section 3: Closing CTA -->
+    <section class="closing-cta" aria-labelledby="cta-title">
+      <h2 id="cta-title">Tutup buku tulisnya.<br>Kasbon Anda aman di sini.</h2>
+      <p>Gratis, tanpa daftar, dan datanya tetap milik Anda.</p>
+      <div class="cta-glow"><a class="btn-primary" href="app/">Buka Kasku <span aria-hidden="true">→</span></a></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <span>© 2026 Kasku · Open-source (MIT)</span>
+      <span><a href="https://github.com/jumpshotcum/test-repo">Kode sumber</a> · <a href="https://github.com/jumpshotcum/test-repo/blob/main/docs/privacy.md">Privasi</a> · <a href="https://github.com/jumpshotcum/test-repo/issues">Laporkan kesalahan</a></span>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+  <script>
+    // Progressive enhancement: content is fully visible without JS/GSAP (slow networks, reduced motion).
+    window.addEventListener("DOMContentLoaded", function () {
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!window.gsap || reduce) return;
+      gsap.registerPlugin(ScrollTrigger);
+
+      // gsap.set() initial states FIRST (FOUC prevention)
+      gsap.set([".eyebrow", ".hero h1", ".hero .subtitle", ".hero .btn-primary", ".scroll-down"], { opacity: 0, y: 30 });
+      gsap.set(".phone", { opacity: 0, y: 40, rotate: 6 });
+      gsap.set(".feature-card", { opacity: 0, y: 55, rotateX: 18 });
+
+      var tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      tl.to(".hero .eyebrow", { opacity: 1, y: 0, duration: 0.6 })
+        .to(".hero h1", { opacity: 1, y: 0, duration: 0.8 }, "-=0.3")
+        .to(".hero .subtitle", { opacity: 1, y: 0, duration: 0.6 }, "-=0.5")
+        .to(".hero .btn-primary", { opacity: 1, y: 0, duration: 0.5 }, "-=0.3")
+        .to(".phone", { opacity: 1, y: 0, rotate: 2, duration: 0.9 }, "-=0.6")
+        .to(".scroll-down", { opacity: 1, y: 0, duration: 0.4 }, "-=0.2");
+      gsap.to(".section-head .eyebrow, .closing-cta .eyebrow", { opacity: 1, y: 0 });
+
+      ScrollTrigger.batch(".feature-card", {
+        start: "top 85%",
+        onEnter: function (batch) { gsap.to(batch, { opacity: 1, y: 0, rotateX: 0, duration: 0.8, stagger: 0.11, ease: "power2.out" }); }
+      });
+
+      var hero = document.querySelector(".hero");
+      if (window.matchMedia("(pointer: fine)").matches) {
+        hero.addEventListener("mousemove", function (e) {
+          var x = (e.clientX / window.innerWidth - 0.5) * 2;
+          var y = (e.clientY / window.innerHeight - 0.5) * 2;
+          gsap.to(".hero-shapes-back", { x: x * 45, y: y * 22, duration: 0.8 });
+          gsap.to(".hero-shapes-mid", { x: x * 22, y: y * 11, duration: 0.8 });
+          gsap.to(".hero .container", { x: x * 8, y: y * 5, duration: 0.8 });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
