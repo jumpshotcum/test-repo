@@ -1,44 +1,72 @@
-# Katalog Skill
+# Kasku
 
-Direktori web interaktif untuk semua **plugin, skill, agent, dan command** Claude Code yang terinstall. Bisa dicari, difilter per kategori dan jenis, dan setiap perintah bisa disalin dengan satu klik.
+**Buku kasbon digital gratis untuk warung.** Catat utang pelanggan dalam 2 ketukan, tagih sopan lewat WhatsApp, dan data tetap di HP Anda. Tanpa server, tanpa akun.
 
-| Plugin | Skill | Agent | Command |
-|-------:|------:|------:|--------:|
-| 106 | 246 | 94 | 132 |
+[![Test](https://github.com/jumpshotcum/test-repo/actions/workflows/pages.yml/badge.svg)](https://github.com/jumpshotcum/test-repo/actions/workflows/pages.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-1d6b54.svg)](LICENSE)
 
-> Angka di atas diambil saat katalog terakhir dibuat. Sumber kebenarannya adalah `data/catalog.json`.
+**[Buka aplikasi](https://jumpshotcum.github.io/test-repo/app/)** · [Halaman depan](https://jumpshotcum.github.io/test-repo/) · [Mulai](#mulai) · [Cara kerja](#cara-kerja) · [Dokumen](#dokumen)
 
-## Fitur
+<a id="mulai"></a>
+## Mulai
 
-- **Pencarian teks penuh** di nama dan deskripsi plugin maupun item di dalamnya, dengan kata yang cocok di-highlight. Tekan <kbd>/</kbd> untuk langsung ke kotak pencarian.
-- **Filter** per jenis (skill / agent / command) dan 13 kategori, plus pengurutan (nama, jumlah item, kategori).
-- **Panel detail** per plugin: daftar lengkap skill, agent, dan command, masing-masing dengan tombol salin perintah (mis. `/pw:fix`, `/commit-craft:commit-craft`).
-- **URL bisa dibagikan**: pencarian, filter, dan panel yang terbuka tersimpan di hash URL.
-- **Tema terang/gelap** (ikut sistem, bisa diganti manual), responsif sampai lebar 320px, bisa dipakai penuh dengan keyboard.
-
-## Menjalankan secara lokal
-
-Tidak ada langkah build. Situs ini cuma HTML, CSS, dan JavaScript biasa, tapi harus dibuka lewat server, karena `fetch()` tidak jalan di `file://`.
+Tidak ada langkah build. Jalankan server statis dari root repo:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-Lalu buka http://localhost:8000.
+Buka http://localhost:8000/app/ untuk aplikasi, atau http://localhost:8000/ untuk halaman depan.
 
-## Memperbarui katalog
+Untuk pengguna: buka [aplikasinya](https://jumpshotcum.github.io/test-repo/app/) di HP, lalu pilih **Tambahkan ke layar utama**. Setelah dibuka sekali, Kasku jalan tanpa internet.
 
-`scripts/extract_catalog.py` membaca front-matter `SKILL.md`, file agent/command, dan `plugin.json` dari setiap plugin terinstall, lalu menulis `data/catalog.json`. Yang disimpan hanya metadata publik (nama, deskripsi, versi, jumlah). Path lokal tidak ikut disimpan.
+<a id="kenapa"></a>
+## Kenapa Kasku ada
 
-```bash
-npm run catalog
+Idenya diuji dulu sebelum ada kode ([`docs/strategy/verdict.md`](docs/strategy/verdict.md)). Ide awal adalah aplikasi pembukuan berlangganan, dan **hasilnya KILL**. Pemain berdana besar sudah mencobanya: BukuKas/Lummo menutup aplikasinya pada 2023. Simulasi pelanggan pun menunjuk ke rasa sakit yang lain. Jadi Kasku dibentuk ulang:
+
+| | Aplikasi pembukuan biasa | Kasku |
+|---|---|---|
+| Fokus | Pembukuan lengkap | Kasbon + kas harian |
+| Menagih | Manual | Tombol **Tagih via WA** dengan pesan sopan |
+| Data | Di server penyedia | Hanya di HP pengguna |
+| Akun | Wajib daftar | Tidak ada |
+| Biaya | Langganan / iklan | Gratis, MIT |
+| Risiko data hilang | Bergantung pada server | Cadangan 1 ketukan + pengingat 7 hari |
+
+<a id="cara-kerja"></a>
+## Cara kerja
+
+```mermaid
+flowchart LR
+  UI["main.js<br/>UI tanpa innerHTML"] -->|commit| Store["store.js<br/>fungsi murni"]
+  Store --> LS[("localStorage")]
+  UI --> WA["wa.js → wa.me"]
+  UI --> BK["backup.js<br/>file .json"]
+  SW["sw.js"] -.->|offline| UI
 ```
 
-Pemetaan plugin ke kategori ada di `scripts/categories.json`. Plugin baru yang belum dipetakan akan masuk ke kategori **Other**.
+- **Model data:** satu objek state. Saldo dihitung dari entri, tidak disimpan (`app/js/store.js`).
+- **Input uang:** `15rb`, `15.000`, `1,5jt`, dan `Rp 15.000` semuanya dimengerti. Input yang ambigu ditolak (`app/js/format.js`).
+- **Privasi:** CSP `'self'` saja di aplikasi. Tidak ada permintaan ke domain lain ([`docs/privacy.md`](docs/privacy.md)).
 
-## Tes
+<a id="bukti"></a>
+## Bukti kualitas
 
-Tes end-to-end memakai Playwright dan dijalankan di viewport desktop dan mobile.
+Semua angka berikut bisa diulang dari repo ini:
+
+| Pemeriksaan | Hasil |
+|---|---|
+| Tes unit (`npm run test:unit`) | 19 lulus |
+| Tes e2e Playwright, desktop + mobile (`npm run test:e2e`) | 32 lulus |
+| Audit render design-qa (320px & 1280px, 3 layar) | 0 blocker, 0 high |
+| Kontras WCAG AA (a11y-audit, terang & gelap) | 16/16 pasangan lulus |
+| Palet grafik (dataviz `validate_palette.js`) | Semua cek lulus, termasuk buta warna |
+| Sinkronisasi locale id ↔ en (i18n `locale_sync.py`) | 0 error |
+| Dockerfile (`dockerfile_analyzer.py`) | 100/100 |
+
+<details>
+<summary><b>Pengembangan & tes</b></summary>
 
 ```bash
 npm install
@@ -52,28 +80,45 @@ npx playwright install chromium
 npm test
 ```
 
-## Deploy
+Kontributor baru: buka tur kode `.tours/new-joiner-kasku.tour` dengan ekstensi VS Code CodeTour.
 
-Situs di-deploy oleh GitHub Pages langsung dari branch `main` (**Settings → Pages → Deploy from a branch → main / root**), ke https://jumpshotcum.github.io/test-repo/. File `.nojekyll` membuat GitHub menyajikan file apa adanya tanpa Jekyll.
+Teks UI ada di `app/locales/id.js` (sumber) dan `app/locales/en.js`. Setiap kunci harus ada di keduanya.
 
-`.github/workflows/pages.yml` menjalankan tes Playwright di setiap push dan pull request.
+Setiap kali file yang di-cache berubah, naikkan `VERSION` di `app/sw.js`.
+</details>
 
-## Struktur
+<details>
+<summary><b>Self-hosting dengan Docker</b></summary>
 
-```
-index.html              markup halaman
-styles.css              token desain (terang/gelap) dan layout
-app.js                  pencarian, filter, panel detail, state di URL
-data/catalog.json       data katalog hasil generate
-scripts/                extractor dan pemetaan kategori
-tests/                  tes Playwright
+```bash
+docker build -t kasku .
 ```
 
-## Kualitas
+```bash
+docker run --rm -p 8080:8080 kasku
+```
 
-Sebelum rilis, halaman ini diperiksa dengan plugin yang ada di katalognya sendiri:
+nginx berjalan tanpa root dengan header keamanan dan CSP ketat (`deploy/nginx.conf`).
+</details>
 
-- **design-qa**: audit halaman hasil render di lebar 320px dan 1280px. Hasilnya 0 blocker dan 0 high.
-- **a11y-audit**: pengecekan kontras WCAG 2.2. Semua pasangan warna teks lolos AA di tema terang dan gelap.
-- **pw** (Playwright): 16 tes end-to-end.
-- **security-guidance**: semua rendering memakai DOM API yang aman. Tidak ada `innerHTML`.
+<a id="dokumen"></a>
+## Dokumen
+
+| Dokumen | Isi |
+|---|---|
+| [Uji ide (roast)](docs/strategy/verdict.md) | Panel 5 sudut pandang, verdict, tes 48 jam |
+| [Backlog MVP](docs/product/backlog.md) | Epic, user story, acceptance criteria |
+| [Privasi](docs/privacy.md) | Penilaian UU PDP / GDPR |
+| [Peluncuran](docs/launch/) | Post LinkedIn, naskah video 30 detik |
+| [Jejak skill](docs/skills-used.md) | Skill mana yang dipakai untuk apa |
+
+<a id="batasan"></a>
+## Batasan
+
+- Data hanya ada di satu perangkat. Tidak ada sinkronisasi; pindah HP lewat file cadangan.
+- File cadangan belum dienkripsi, dan belum ada kunci PIN di dalam aplikasi (direncanakan).
+- **Belum ada pengguna nyata.** Langkah berikutnya adalah tes retensi 7 hari dengan 5 warung (lihat verdict).
+
+## Lisensi
+
+[MIT](LICENSE)

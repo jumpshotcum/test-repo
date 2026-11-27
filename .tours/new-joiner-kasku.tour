@@ -1,0 +1,79 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "Kasku — tur untuk kontributor baru",
+  "description": "Untuk developer yang baru bergabung: setelah 12 langkah ini Anda tahu di mana data hidup, bagaimana uang di-parse, kenapa tidak ada server, dan cara menambah fitur tanpa merusak janji 'data tetap di HP'.",
+  "ref": "main",
+  "steps": [
+    {
+      "directory": "app",
+      "title": "Seluruh aplikasi ada di sini",
+      "description": "**Situasi:** `app/` adalah PWA lengkap — HTML, CSS, modul ES, locale, service worker. Tidak ada bundler.\n\n**Mekanisme:** browser memuat `index.html` → `js/main.js` sebagai `type=module`, yang mengimpor modul lain secara langsung.\n\n**Implikasi:** apa yang Anda tulis adalah apa yang jalan. Jalankan `python3 -m http.server` di root repo lalu buka `/app/`.\n\n**Gotcha:** `fetch` dan modul ES tidak jalan dari `file://` — selalu lewat server."
+    },
+    {
+      "file": "app/js/store.js",
+      "line": 3,
+      "title": "Model data: satu objek state",
+      "description": "**Situasi:** seluruh data aplikasi adalah satu objek: `customers`, `entries`, `settings`, `lastBackupAt`.\n\n**Mekanisme:** semua operasi di file ini adalah **fungsi murni** — menerima state, mengembalikan state baru. Tidak ada DOM di sini.\n\n**Implikasi:** logika bisnis diuji dengan `node --test` tanpa browser (`tests/unit/store.test.js`).\n\n**Gotcha:** saldo **tidak disimpan** — selalu dihitung dari entri. Jangan menambah field `balance` ke pelanggan; itu akan cepat tidak sinkron."
+    },
+    {
+      "file": "app/js/store.js",
+      "line": 28,
+      "title": "Saldo = kasbon − bayar, tidak pernah negatif",
+      "description": "**Mekanisme:** `balanceOf` menjumlahkan entri `debt` dan mengurangi `pay` untuk satu pelanggan, lalu `Math.max(0, …)`.\n\n**Implikasi:** setiap layar (total piutang, daftar, detail, pesan WA) memakai fungsi ini — satu sumber kebenaran."
+    },
+    {
+      "file": "app/js/store.js",
+      "line": 89,
+      "title": "addEntry: validasi dan pembatasan bayar",
+      "description": "**Mekanisme:** nominal harus angka positif; pembayaran yang melebihi sisa utang **dipotong** ke sisa utang dan hasilnya membawa `capped: true` agar UI bisa memberi tahu pengguna.\n\n**Gotcha:** error dikembalikan sebagai kunci i18n (`{ error: \"amount.errAmount\" }`), bukan teks. Kata-katanya ditentukan UI lewat `t()` — jangan hardcode pesan di sini."
+    },
+    {
+      "file": "app/js/format.js",
+      "line": 22,
+      "title": "parseAmount: cara orang Indonesia mengetik uang",
+      "description": "**Situasi:** pemilik warung mengetik `15rb`, `15.000`, `1,5jt`, `Rp 15.000`.\n\n**Mekanisme:** dengan sufiks (rb/k/jt/juta), `.` atau `,` adalah desimal; tanpa sufiks, keduanya pemisah ribuan. Input ambigu (`15.00`) ditolak, bukan ditebak.\n\n**Gotcha:** menolak lebih baik daripada mencatat angka salah di buku utang. Tambah kasus baru ke `tests/unit/format.test.js` sebelum mengubah regex."
+    },
+    {
+      "file": "app/js/wa.js",
+      "line": 9,
+      "title": "WhatsApp tanpa API",
+      "description": "**Mekanisme:** `normalizePhone` mengubah `0812…`/`+62 812…` menjadi `62812…`; `waUrl` membuat tautan `https://wa.me/<nomor>?text=…`. WhatsApp terbuka di HP pengguna; Kasku tidak mengirim apa pun.\n\n**Implikasi:** fitur tagih tidak butuh server, token, atau biaya.\n\n**Gotcha:** `null` berarti nomor tidak valid, `\"\"` berarti kosong (boleh). Keduanya berbeda di validasi pelanggan."
+    },
+    {
+      "file": "app/js/backup.js",
+      "line": 24,
+      "title": "Cadangan: satu-satunya pintu data keluar-masuk",
+      "description": "**Situasi:** karena tidak ada server, file cadangan adalah jaring pengaman utama (risiko #1 dari uji ide di `docs/strategy/verdict.md`).\n\n**Mekanisme:** `parseBackup` memeriksa penanda `app: \"kasku\"`, versi skema, bentuk setiap pelanggan/entri, dan bahwa setiap kasbon menunjuk ke pelanggan yang ada.\n\n**Gotcha:** validasinya sengaja ketat — file JSON acak tidak boleh pernah menimpa data pengguna. UI selalu menampilkan pratinjau sebelum mengganti."
+    },
+    {
+      "file": "app/js/main.js",
+      "line": 15,
+      "title": "UI: h() alih-alih innerHTML",
+      "description": "**Mekanisme:** `h(tag, attrs, ...children)` membangun elemen DOM; teks selalu menjadi text node.\n\n**Implikasi:** nama pelanggan seperti `<img onerror=…>` tampil sebagai teks, bukan dieksekusi. Hook `security-guidance` juga memblokir `innerHTML` di repo ini.\n\n**Gotcha:** jangan tambah `innerHTML`/`insertAdjacentHTML` untuk 'kemudahan'."
+    },
+    {
+      "file": "app/js/main.js",
+      "line": 39,
+      "title": "commit(): satu jalur untuk mengubah data",
+      "description": "**Mekanisme:** setiap perubahan → `commit(nextState)` → simpan ke localStorage → `render()`. Undo cukup `commit(prev)` karena state tidak pernah dimutasi.\n\n**Implikasi:** fitur baru = fungsi murni di `store.js` + satu panggilan `commit` di sini."
+    },
+    {
+      "file": "app/js/main.js",
+      "line": 325,
+      "title": "openAmount: janji '2 ketukan'",
+      "description": "**Mekanisme:** chip nominal cepat langsung menyimpan (ketukan ke-2), lalu menampilkan toast dengan **Batalkan**. Dari daftar, sheet tertutup; dari detail pelanggan (`backToDetail`), kembali ke detail.\n\n**Gotcha:** menambah langkah konfirmasi di sini akan mematahkan tes `records a kasbon in two taps` — itu disengaja."
+    },
+    {
+      "file": "app/sw.js",
+      "line": 2,
+      "title": "Offline: naikkan VERSION setiap rilis",
+      "description": "**Mekanisme:** service worker cache-first untuk origin sendiri saja; tidak menyentuh domain lain.\n\n**Gotcha:** jika Anda mengubah file yang di-cache tetapi lupa menaikkan `VERSION`, pengguna akan terus melihat versi lama. Tambahkan file baru ke `ASSETS`."
+    },
+    {
+      "file": "tests/e2e/app.spec.js",
+      "line": 30,
+      "title": "Sekarang Anda bisa berkontribusi",
+      "description": "Jalankan `npm test` (unit + e2e desktop & mobile). Fitur baru butuh: fungsi murni + tes unit, teks di **kedua** `app/locales/*.js` (dicek oleh `locale_sync.py` skill i18n), dan tes e2e untuk alur pengguna. Backlog ada di `docs/product/backlog.md` — A5 (riwayat) dan C2 sudah jalan; kandidat berikutnya: kunci PIN dan cadangan terenkripsi (`docs/privacy.md`)."
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "market_name": "Bookkeeping & invoicing apps for Indonesian UMKM (IDR/yr)",
+  "profile": "consumer",
+  "top_down": {
+    "_source": "Assumption: UMKM spend on bookkeeping/accounting/POS software ~ US$300M/yr (~Rp 4.8T) - rough, no authoritative report found; treat as low confidence",
+    "total_market_value": 4800000000000,
+    "serviceable_fraction": 0.25,
+    "reachable_share": 0.002
+  },
+  "bottoms_up": {
+    "_source": "~65M UMKM (Kemenkop UKM); ~25M digitally onboarded (gov. digitalization programme); price Rp 29.000 x 12",
+    "total_potential_customers": 25000000,
+    "annual_price": 348000,
+    "serviceable_fraction": 0.10,
+    "realistic_adoption": 0.002
+  }
+}
